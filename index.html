@@ -31,7 +31,7 @@
         .whatsapp-btn { background-color: #25D366; border-radius: 50%; padding: 4px; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.2s; }
         .whatsapp-btn:hover { transform: scale(1.1); }
         .date-input-small { padding: 0.25rem 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; width: 140px; }
-        .modal-body { max-height: 70vh; overflow-y: auto; }
+        .modal-body { max-height: 70vh; overflow-y: auto; } summary { cursor: pointer; }
     </style>
 </head>
 <body class="bg-kanban-bg font-sans" style="display: none;">
@@ -326,7 +326,17 @@
             const logTableBody = document.getElementById('log-table-body');
             logTableBody.innerHTML = '';
             if (data.length === 0) { logTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No logs found.</td></tr>`; } 
-            else { data.forEach(log => { logTableBody.insertAdjacentHTML('beforeend', `<tr><td class="px-4 py-2 text-sm text-gray-900 break-words">${log.user_email}</td><td class="px-4 py-2 text-sm text-gray-500">${log.vehicle_no || 'N/A'}</td><td class="px-4 py-2 text-sm text-gray-500 font-semibold">${log.changed_field}</td><td class="px-4 py-2 text-sm text-gray-500 break-words">${log.old_value || '<i>empty</i>'}</td><td class="px-4 py-2 text-sm text-gray-900 break-words">${log.new_value || '<i>empty</i>'}</td><td class="px-4 py-2 text-sm text-gray-500">${formatDateTime(log.created_at)}</td></tr>`); }); }
+            else { data.forEach(log => { logTableBody.insertAdjacentHTML('beforeend', `<tr><td class="px-4 py-2 text-sm text-gray-900 break-words">${log.user_email}</td><td class="px-4 py-2 text-sm text-gray-500">${log.vehicle_no || 'N/A'}</td><td class="px-4 py-2 text-sm text-gray-500 font-semibold">${log.changed_field}</td><td class="px-4 py-2 text-sm text-gray-500 break-words">
+    ${(log.old_value && log.old_value.length > 30)
+        ? `<details><summary>${log.old_value.substring(0, 25) + '...'}</summary><p class="mt-2">${log.old_value}</p></details>`
+        : (log.old_value || '<i>empty</i>')
+    }
+</td><td class="px-4 py-2 text-sm text-gray-900 break-words">
+    ${(log.new_value && log.new_value.length > 30)
+        ? `<details><summary>${log.new_value.substring(0, 25) + '...'}</summary><p class="mt-2">${log.new_value}</p></details>`
+        : (log.new_value || '<i>empty</i>')
+    }
+</td><td class="px-4 py-2 text-sm text-gray-500">${formatDateTime(log.created_at)}</td></tr>`); }); }
             document.getElementById('logModal').style.display = 'flex';
         } catch (error) { console.error("Failed to load logs:", error); alertUser("Could not load logs."); } 
         finally { showLoading(false); }
@@ -349,3 +359,4 @@
 </script>
 </body>
 </html>
+
