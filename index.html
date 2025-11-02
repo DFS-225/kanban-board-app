@@ -21,7 +21,7 @@
         .column-header { padding: 1rem; border-radius: 0.75rem 0.75rem 0 0; }
         .card-list-container { max-height: calc(100% - 64px); overflow-y: auto; padding: 0.75rem; flex-grow: 1; scrollbar-width: thin; scrollbar-color: #9ca3af #f3f4f6; }
         .kanban-card { transition: all 0.1s ease; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); border-radius: 0.5rem; margin-bottom: 0.75rem; border-left: 4px solid; }
-        .admin-card { cursor: pointer; } /* Admin ke liye card ko clickable banayein */
+        .admin-card { cursor: pointer; }
         .detail-text { font-size: 0.75rem; color: #4b5563; }
         .detail-text-label { font-weight: 500; color: #9ca3af; margin-right: 4px; }
         .note-textarea { resize: vertical; min-height: 60px; font-size: 0.75rem; padding: 0.5rem; border-radius: 0.25rem; border: 1px solid #d1d5db; }
@@ -31,6 +31,7 @@
         .whatsapp-btn { background-color: #25D366; border-radius: 50%; padding: 4px; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.2s; }
         .whatsapp-btn:hover { transform: scale(1.1); }
         .date-input-small { padding: 0.25rem 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; width: 140px; }
+        .modal-body { max-height: 70vh; overflow-y: auto; }
     </style>
 </head>
 <body class="bg-kanban-bg font-sans" style="display: none;">
@@ -42,45 +43,20 @@
         </div>
     </div>
 
-    <!-- *** NAYA FEATURE: EDIT MODAL (Popup Window) *** -->
     <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 items-center justify-center z-40" style="display: none;">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 modal-body">
             <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Edit Lead Details</h3>
             <form id="edit-form" onsubmit="saveLeadDetails(event)">
                 <input type="hidden" id="edit-lead-id">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="edit-name" class="block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" id="edit-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="edit-expiry" class="block text-sm font-medium text-gray-700">Expiry Date</label>
-                        <input type="date" id="edit-expiry" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="edit-whatsapp" class="block text-sm font-medium text-gray-700">WhatsApp Number</label>
-                        <input type="text" id="edit-whatsapp" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="edit-other1" class="block text-sm font-medium text-gray-700">Other Number 1</label>
-                        <input type="text" id="edit-other1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                     <div>
-                        <label for="edit-other2" class="block text-sm font-medium text-gray-700">Other Number 2</label>
-                        <input type="text" id="edit-other2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="edit-vehicle-name" class="block text-sm font-medium text-gray-700">Vehicle Name</label>
-                        <input type="text" id="edit-vehicle-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="edit-vehicle-no" class="block text-sm font-medium text-gray-700">Vehicle No</label>
-                        <input type="text" id="edit-vehicle-no" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="edit-tp-price" class="block text-sm font-medium text-gray-700">TP Price</label>
-                        <input type="text" id="edit-tp-price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
+                    <div><label for="edit-name" class="block text-sm font-medium text-gray-700">Name</label><input type="text" id="edit-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></div>
+                    <div><label for="edit-expiry" class="block text-sm font-medium text-gray-700">Expiry Date</label><input type="date" id="edit-expiry" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></div>
+                    <div><label for="edit-whatsapp" class="block text-sm font-medium text-gray-700">WhatsApp Number</label><input type="text" id="edit-whatsapp" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></div>
+                    <div><label for="edit-other1" class="block text-sm font-medium text-gray-700">Other Number 1</label><input type="text" id="edit-other1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></div>
+                    <div><label for="edit-other2" class="block text-sm font-medium text-gray-700">Other Number 2</label><input type="text" id="edit-other2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></div>
+                    <div><label for="edit-vehicle-name" class="block text-sm font-medium text-gray-700">Vehicle Name</label><input type="text" id="edit-vehicle-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></div>
+                    <div><label for="edit-vehicle-no" class="block text-sm font-medium text-gray-700">Vehicle No</label><input type="text" id="edit-vehicle-no" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></div>
+                    <div><label for="edit-tp-price" class="block text-sm font-medium text-gray-700">TP Price</label><input type="text" id="edit-tp-price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></div>
                 </div>
                 <div class="mt-6 flex justify-end space-x-3">
                     <button type="button" onclick="closeEditModal()" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">Cancel</button>
@@ -90,6 +66,30 @@
         </div>
     </div>
 
+    <div id="logModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 items-center justify-center z-40" style="display: none;">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium leading-6 text-gray-900">Activity Logs (Non-Admin)</h3>
+                <button type="button" onclick="closeLogModal()" class="text-gray-400 hover:text-gray-600 p-2 rounded-full text-2xl leading-none">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Vehicle No</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Field Changed</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Old Value</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">New Value</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
     <header class="bg-white shadow-md p-4 sticky top-0 z-10 flex flex-col space-y-3">
         <div class="flex flex-col sm:flex-row justify-between items-center w-full">
             <div class="flex items-center space-x-4">
@@ -99,6 +99,7 @@
                 </div>
             </div>
             <div class="flex items-center space-x-4">
+                <button id="view-logs-button" onclick="openLogModal()" class="bg-gray-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-700" style="display: none;">View Logs</button>
                 <div>
                     <p class="text-sm font-medium text-gray-700" id="userEmail"></p>
                 </div>
@@ -122,9 +123,6 @@
     <div id="kanbanBoard" class="p-4 flex space-x-4 overflow-x-auto h-[calc(100vh-12rem)]"></div>
 
     <script>
-    // ... (baaki ka poora script pichle message jaisa hi hai)
-    // *** SIRF KUCH NAYE FUNCTIONS AUR BADLAAV HAIN ***
-
     const ALL_STATUSES = ['Not Contacts', 'Follow UP', 'Doc Collected', 'Quotation send', 'Policy Done', 'Gadi nhi hai', 'Lead Lost']; 
     const STATUS_COLOR_MAP = {'Not Contacts': '#4b5563', 'Follow UP': '#7c3aed', 'Doc Collected': '#0070c0', 'Quotation send': '#0070c0', 'Policy Done': '#059669', 'Gadi nhi hai': '#b91c1c', 'Lead Lost': '#ef4444'}; 
     const STATUS_COLUMN_DEFINITIONS = [ { id: 'not-contacts', title_en: 'Not Contacts', status: 'Not Contacts' }, { id: 'follow-up', title_en: 'Follow Up', status: 'Follow UP' }, { id: 'doc-collected', title_en: 'Doc Collected', status: 'Doc Collected' }, { id: 'quotation-send', title_en: 'Quotation Send', status: 'Quotation send' }, { id: 'policy-done', title_en: 'Policy Done', status: 'Policy Done' }, { id: 'gadi-nhi-hai', title_en: 'Gadi nhi hai', status: 'Gadi nhi hai' }, { id: 'lead-lost', title_en: 'Lead Lost', status: 'Lead Lost' }, ]; 
@@ -158,7 +156,10 @@
         const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
         document.getElementById('endDate').value = lastDayOfMonth; 
         lastEndDate = lastDayOfMonth;
+        
         STATUS_COLUMN_DEFINITIONS.forEach(col => { COLUMN_SORT_ORDERS[col.id] = 'asc'; });
+        document.getElementById('view-logs-button').style.display = 'block';
+
         renderColumns("शुरू करने के लिए कृपया एक तारीख सीमा चुनें और 'फ़िल्टर करें' पर क्लिक करें।");
         updateColumnCounts([]);
         applyAllFilters();
@@ -200,47 +201,10 @@
 
     function updateColumnCounts(data) { document.getElementById('totalLeads').textContent = data.length; STATUS_COLUMN_DEFINITIONS.forEach(col => { const countEl = document.getElementById(`count-${col.id}`); if(countEl) countEl.textContent = data.filter(lead => normalizeStatusToId(lead.STATUS) === col.id).length; }); }
     
-    async function fetchKanbanData(startDate, endDate) {
-        showLoading(true);
-        try {
-            let query = supabaseClient.from('leads').select('*');
-            if (startDate) query = query.gte('expiry', startDate);
-            if (endDate) query = query.lte('expiry', endDate);
-            const { data, error } = await query;
-            if (error) throw error;
-            handleFetchedData(data.map(row => ({ ID: row.id, S_NO: row.s_no, NAME: row.name, STATUS: row.status, VEHICLE_NO: row.vehicle_no, VEHICLE_NAME: row.vehicle_name, PRODUCT: row.product, LAST_NOTE: row.last_note, VEHICLE_EXPIRY: formatSupabaseDate(row.expiry), EXPIRY_ISO: row.expiry, LAST_UPDATE_DATETIME: row.last_update_datetime, THIRD_PARTY_PRICE: row.third_party_price, WHATSAPP_NUMBER: row.whatsapp_number, OTHER_NUMBER_1: row.other_number_1, OTHER_NUMBER_2: row.other_number_2 })));
-        } catch (error) { handleFailure(error); }
-    }
-    
-    async function searchLeads(searchTerm) {
-        showLoading(true, `"${searchTerm}" के लिए खोजा जा रहा है...`);
-        try {
-            const searchPattern = `%${searchTerm}%`;
-            const { data, error } = await supabaseClient.from('leads').select('*').or(`name.ilike.${searchPattern},whatsapp_number.ilike.${searchPattern},other_number_1.ilike.${searchPattern},other_number_2.ilike.${searchPattern},vehicle_no.ilike.${searchPattern}`).limit(100);
-            if (error) throw error;
-            handleFetchedData(data.map(row => ({ ID: row.id, S_NO: row.s_no, NAME: row.name, STATUS: row.status, VEHICLE_NO: row.vehicle_no, VEHICLE_NAME: row.vehicle_name, PRODUCT: row.product, LAST_NOTE: row.last_note, VEHICLE_EXPIRY: formatSupabaseDate(row.expiry), EXPIRY_ISO: row.expiry, LAST_UPDATE_DATETIME: row.last_update_datetime, THIRD_PARTY_PRICE: row.third_party_price, WHATSAPP_NUMBER: row.whatsapp_number, OTHER_NUMBER_1: row.other_number_1, OTHER_NUMBER_2: row.other_number_2 })));
-        } catch(error) { handleFailure(error); }
-    }
-    
     function handleFetchedData(data) { CURRENTLY_DISPLAYED_DATA = data; renderColumns(); renderLeads(CURRENTLY_DISPLAYED_DATA); showLoading(false); }
     function handleFailure(error) { showLoading(false); console.error("Supabase Function Failed:", error); renderColumns(`<p class="text-red-600 font-bold">Error: Could not load data. (${error.message})</p><p class="text-gray-400 mt-2">Please check browser console for details.</p>`); }
-    
-    function applyAllFilters() { 
-        const startDateStr = document.getElementById('startDate').value, endDateStr = document.getElementById('endDate').value; 
-        if (!startDateStr || !endDateStr) { alert("शुरू करने के लिए कृपया Start Date और End Date दोनों चुनें।"); return; } 
-        lastStartDate = startDateStr; lastEndDate = endDateStr;
-        document.getElementById('searchInput').value = ''; 
-        fetchKanbanData(startDateStr, endDateStr); 
-    }
-    
-    function clearDateFilter() {
-        document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; document.getElementById('searchInput').value = '';
-        lastStartDate = ''; lastEndDate = '';
-        CURRENTLY_DISPLAYED_DATA = [];
-        renderColumns("शुरू करने के लिए कृपया एक तारीख सीमा चुनें और 'फ़िल्टर करें' पर क्लिक करें।");
-        updateColumnCounts([]);
-    }
-    
+    function applyAllFilters() { const startDateStr = document.getElementById('startDate').value, endDateStr = document.getElementById('endDate').value; if (!startDateStr || !endDateStr) { alert("शुरू करने के लिए कृपया Start Date और End Date दोनों चुनें।"); return; } lastStartDate = startDateStr; lastEndDate = endDateStr; document.getElementById('searchInput').value = ''; fetchKanbanData(startDateStr, endDateStr); }
+    function clearDateFilter() { document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; document.getElementById('searchInput').value = ''; lastStartDate = ''; lastEndDate = ''; CURRENTLY_DISPLAYED_DATA = []; renderColumns("शुरू करने के लिए कृपया एक तारीख सीमा चुनें और 'फ़िल्टर करें' पर क्लिक करें।"); updateColumnCounts([]); }
     function renderLeads(leadsToRender) {
         const groupedLeads = leadsToRender.reduce((acc, lead) => { const statusId = normalizeStatusToId(lead.STATUS); if (!acc[statusId]) acc[statusId] = []; acc[statusId].push(lead); return acc; }, {});
         STATUS_COLUMN_DEFINITIONS.forEach(col => {
@@ -260,11 +224,7 @@
     function handleSearchInput() {
         clearTimeout(debounceTimer);
         const searchTerm = document.getElementById('searchInput').value.trim();
-        if (searchTerm.length === 0) {
-            if (lastStartDate && lastEndDate) { fetchKanbanData(lastStartDate, lastEndDate); } 
-            else { clearDateFilter(); }
-            return;
-        }
+        if (searchTerm.length === 0) { if (lastStartDate && lastEndDate) { fetchKanbanData(lastStartDate, lastEndDate); } else { clearDateFilter(); } return; }
         if (searchTerm.length < 3) { return; }
         debounceTimer = setTimeout(() => { searchLeads(searchTerm); }, 500);
     }
@@ -285,15 +245,7 @@
     }
     
     function attachCardInteractionListeners() { 
-        if (currentUserRole === 'admin') {
-            document.querySelectorAll('.admin-card').forEach(card => card.addEventListener('click', e => { 
-                if (!e.target.closest('a, button')) {
-                    const leadId = card.dataset.id;
-                    const leadData = CURRENTLY_DISPLAYED_DATA.find(l => l.ID == leadId);
-                    if(leadData) openEditModal(leadData);
-                }
-            })); 
-        }
+        if (currentUserRole === 'admin') { document.querySelectorAll('.admin-card').forEach(card => card.addEventListener('click', e => { if (!e.target.closest('a, button')) { const leadId = card.dataset.id; const leadData = CURRENTLY_DISPLAYED_DATA.find(l => l.ID == leadId); if(leadData) openEditModal(leadData); } })); }
         if (currentUserRole === 'admin' || currentUserRole === 'editor') { document.querySelectorAll('.edit-note-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); enterEditMode(e.currentTarget.closest('.last-note-container').querySelector('.last-note-display')); })); }
         document.addEventListener('click', e => { if (!e.target.closest('[data-dropdown-container]')) { closeAllDropdowns(); } }); 
     }
@@ -329,67 +281,39 @@
     function exitEditMode(noteEl, editArea) { noteEl.parentElement.querySelector('.flex').classList.remove('hidden'); editArea.remove(); noteEl.classList.remove('hidden'); }
     function alertUser(message) { const el = document.createElement('div'); el.className = 'fixed top-4 right-4 bg-green-500 text-white p-3 rounded-lg shadow-xl z-50'; el.textContent = message; document.body.appendChild(el); setTimeout(() => el.remove(), 3000); }
 
-    // *** NAYE FUNCTIONS: MODAL KO HANDLE KARNE KE LIYE ***
-    function openEditModal(lead) {
-        document.getElementById('edit-lead-id').value = lead.ID;
-        document.getElementById('edit-name').value = lead.NAME;
-        document.getElementById('edit-expiry').value = lead.EXPIRY_ISO || '';
-        document.getElementById('edit-whatsapp').value = lead.WHATSAPP_NUMBER;
-        document.getElementById('edit-other1').value = lead.OTHER_NUMBER_1;
-        document.getElementById('edit-other2').value = lead.OTHER_NUMBER_2;
-        document.getElementById('edit-vehicle-name').value = lead.VEHICLE_NAME;
-        document.getElementById('edit-vehicle-no').value = lead.VEHICLE_NO;
-        document.getElementById('edit-tp-price').value = lead.THIRD_PARTY_PRICE;
-        document.getElementById('editModal').style.display = 'flex';
-    }
-
-    function closeEditModal() {
-        document.getElementById('editModal').style.display = 'none';
-    }
-
+    function openEditModal(lead) { document.getElementById('edit-lead-id').value = lead.ID; document.getElementById('edit-name').value = lead.NAME; document.getElementById('edit-expiry').value = lead.EXPIRY_ISO || ''; document.getElementById('edit-whatsapp').value = lead.WHATSAPP_NUMBER; document.getElementById('edit-other1').value = lead.OTHER_NUMBER_1; document.getElementById('edit-other2').value = lead.OTHER_NUMBER_2; document.getElementById('edit-vehicle-name').value = lead.VEHICLE_NAME; document.getElementById('edit-vehicle-no').value = lead.VEHICLE_NO; document.getElementById('edit-tp-price').value = lead.THIRD_PARTY_PRICE; document.getElementById('editModal').style.display = 'flex'; }
+    function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
     async function saveLeadDetails(event) {
-        event.preventDefault();
-        showLoading(true, 'Saving details...');
+        event.preventDefault(); showLoading(true, 'Saving details...');
         const leadId = document.getElementById('edit-lead-id').value;
-        const updatedData = {
-            name: document.getElementById('edit-name').value,
-            expiry: document.getElementById('edit-expiry').value,
-            whatsapp_number: document.getElementById('edit-whatsapp').value,
-            other_number_1: document.getElementById('edit-other1').value,
-            other_number_2: document.getElementById('edit-other2').value,
-            vehicle_name: document.getElementById('edit-vehicle-name').value,
-            vehicle_no: document.getElementById('edit-vehicle-no').value,
-            third_party_price: document.getElementById('edit-tp-price').value
-        };
-
+        const updatedData = { name: document.getElementById('edit-name').value, expiry: document.getElementById('edit-expiry').value, whatsapp_number: document.getElementById('edit-whatsapp').value, other_number_1: document.getElementById('edit-other1').value, other_number_2: document.getElementById('edit-other2').value, vehicle_name: document.getElementById('edit-vehicle-name').value, vehicle_no: document.getElementById('edit-vehicle-no').value, third_party_price: document.getElementById('edit-tp-price').value };
         try {
             const { error } = await supabaseClient.from('leads').update(updatedData).eq('id', leadId);
             if (error) throw error;
-            
-            // Local data ko update karein taaki dobara fetch na karna pade
             const leadIndex = CURRENTLY_DISPLAYED_DATA.findIndex(l => l.ID == leadId);
-            if (leadIndex > -1) {
-                CURRENTLY_DISPLAYED_DATA[leadIndex].NAME = updatedData.name;
-                CURRENTLY_DISPLAYED_DATA[leadIndex].EXPIRY_ISO = updatedData.expiry;
-                CURRENTLY_DISPLAYED_DATA[leadIndex].VEHICLE_EXPIRY = formatSupabaseDate(updatedData.expiry);
-                CURRENTLY_DISPLAYED_DATA[leadIndex].WHATSAPP_NUMBER = updatedData.whatsapp_number;
-                CURRENTLY_DISPLAYED_DATA[leadIndex].OTHER_NUMBER_1 = updatedData.other_number_1;
-                CURRENTLY_DISPLAYED_DATA[leadIndex].OTHER_NUMBER_2 = updatedData.other_number_2;
-                CURRENTLY_DISPLAYED_DATA[leadIndex].VEHICLE_NAME = updatedData.vehicle_name;
-                CURRENTLY_DISPLAYED_DATA[leadIndex].VEHICLE_NO = updatedData.vehicle_no;
-                CURRENTLY_DISPLAYED_DATA[leadIndex].THIRD_PARTY_PRICE = updatedData.third_party_price;
-            }
-            
+            if (leadIndex > -1) { Object.assign(CURRENTLY_DISPLAYED_DATA[leadIndex], { NAME: updatedData.name, EXPIRY_ISO: updatedData.expiry, VEHICLE_EXPIRY: formatSupabaseDate(updatedData.expiry), WHATSAPP_NUMBER: updatedData.whatsapp_number, OTHER_NUMBER_1: updatedData.other_number_1, OTHER_NUMBER_2: updatedData.other_number_2, VEHICLE_NAME: updatedData.vehicle_name, VEHICLE_NO: updatedData.vehicle_no, THIRD_PARTY_PRICE: updatedData.third_party_price }); }
             renderLeads(CURRENTLY_DISPLAYED_DATA);
             closeEditModal();
             alertUser('Details saved successfully!');
-        } catch (error) {
-            console.error("Details save failed:", error);
-            alertUser('Failed to save details.');
-        } finally {
-            showLoading(false);
-        }
+        } catch (error) { console.error("Details save failed:", error); alertUser('Failed to save details.'); } 
+        finally { showLoading(false); }
     }
+    
+    async function openLogModal() {
+        showLoading(true, 'Loading logs...');
+        try {
+            const { data, error } = await supabaseClient.from('edit_logs').select('*').order('created_at', { ascending: false }).limit(200);
+            if (error) throw error;
+            const logTableBody = document.getElementById('log-table-body');
+            logTableBody.innerHTML = '';
+            if (data.length === 0) { logTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No logs found.</td></tr>`; } 
+            else { data.forEach(log => { logTableBody.insertAdjacentHTML('beforeend', `<tr><td class="px-4 py-2 text-sm text-gray-900 break-words">${log.user_email}</td><td class="px-4 py-2 text-sm text-gray-500">${log.vehicle_no || 'N/A'}</td><td class="px-4 py-2 text-sm text-gray-500 font-semibold">${log.changed_field}</td><td class="px-4 py-2 text-sm text-gray-500 break-words">${log.old_value || '<i>empty</i>'}</td><td class="px-4 py-2 text-sm text-gray-900 break-words">${log.new_value || '<i>empty</i>'}</td><td class="px-4 py-2 text-sm text-gray-500">${formatDateTime(log.created_at)}</td></tr>`); }); }
+            document.getElementById('logModal').style.display = 'flex';
+        } catch (error) { console.error("Failed to load logs:", error); alertUser("Could not load logs."); } 
+        finally { showLoading(false); }
+    }
+
+    function closeLogModal() { document.getElementById('logModal').style.display = 'none'; }
     
     window.logout = logout;
     window.applyAllFilters = applyAllFilters;
@@ -401,6 +325,8 @@
     window.openEditModal = openEditModal;
     window.closeEditModal = closeEditModal;
     window.saveLeadDetails = saveLeadDetails;
+    window.openLogModal = openLogModal;
+    window.closeLogModal = closeLogModal;
 </script>
 </body>
 </html>
