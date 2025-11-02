@@ -233,7 +233,12 @@
         showLoading(true, `"${searchTerm}" के लिए खोजा जा रहा है...`);
         try {
             const searchPattern = `%${searchTerm}%`;
-            const { data, error } = await supabaseClient.from('leads').select('*').or(`name.ilike.${searchPattern},whatsapp_number.ilike.${searchPattern},other_number_1.ilike.${searchPattern},other_number_2.ilike.${searchPattern},vehicle_no.ilike.${searchPattern}`).limit(100);
+            const { data, error } = await supabaseClient.from('leads').select('*').or(`name.ilike.${searchPattern},` +
+    `whatsapp_number.ilike.${searchPattern},` +
+    `other_number_1.ilike.${searchPattern},` +
+    `other_number_2.ilike.${searchPattern},` +
+    `vehicle_no.ilike.${searchPattern},` +
+    `vehicle_name.ilike.${searchPattern}`).limit(100);
             if (error) throw error;
             handleFetchedData(data.map(row => ({ ID: row.id, S_NO: row.s_no, NAME: row.name, STATUS: row.status, VEHICLE_NO: row.vehicle_no, VEHICLE_NAME: row.vehicle_name, PRODUCT: row.product, LAST_NOTE: row.last_note, VEHICLE_EXPIRY: formatSupabaseDate(row.expiry), EXPIRY_ISO: row.expiry, LAST_UPDATE_DATETIME: row.last_update_datetime, THIRD_PARTY_PRICE: row.third_party_price, WHATSAPP_NUMBER: row.whatsapp_number, OTHER_NUMBER_1: row.other_number_1, OTHER_NUMBER_2: row.other_number_2 })));
         } catch(error) { handleFailure(error); }
@@ -378,5 +383,6 @@
 </script>
 </body>
 </html>
+
 
 
