@@ -155,7 +155,6 @@
                 else { expiryColor = 'text-green-600'; }
             }
         } catch (e) { console.error("Expiry color error:", e); }
-
         const name = lead.NAME || 'N/A', vehicleNo = lead.VEHICLE_NO || 'N/A', vehicleName = lead.VEHICLE_NAME || 'N/A', thirdPartyPrice = lead.THIRD_PARTY_PRICE || 'N/A';
         const allNumbers = [lead.WHATSAPP_NUMBER, lead.OTHER_NUMBER_1, lead.OTHER_NUMBER_2].filter(num => num && String(num).trim());
         let whatsappHTML = '';
@@ -168,73 +167,21 @@
 
     function updateColumnCounts(data) { document.getElementById('totalLeads').textContent = data.length; STATUS_COLUMN_DEFINITIONS.forEach(col => { const countEl = document.getElementById(`count-${col.id}`); if(countEl) countEl.textContent = data.filter(lead => normalizeStatusToId(lead.STATUS) === col.id).length; }); }
     
-    async function fetchKanbanData(startDate, endDate) {
-        showLoading(true);
-        try {
-            let query = supabaseClient.from('leads').select('*');
-            if (startDate) query = query.gte('expiry', startDate);
-            if (endDate) query = query.lte('expiry', endDate);
-            const { data, error } = await query;
-            if (error) throw error;
-            handleFetchedData(data.map(row => ({ ID: row.id, S_NO: row.s_no, NAME: row.name, STATUS: row.status, VEHICLE_NO: row.vehicle_no, VEHICLE_NAME: row.vehicle_name, PRODUCT: row.product, LAST_NOTE: row.last_note, VEHICLE_EXPIRY: formatSupabaseDate(row.expiry), EXPIRY_ISO: row.expiry, LAST_UPDATE_DATETIME: row.last_update_datetime, THIRD_PARTY_PRICE: row.third_party_price, WHATSAPP_NUMBER: row.whatsapp_number, OTHER_NUMBER_1: row.other_number_1, OTHER_NUMBER_2: row.other_number_2 })));
-        } catch (error) { handleFailure(error); }
-    }
-    
-    async function searchLeads(searchTerm) {
-        showLoading(true, `"${searchTerm}" के लिए खोजा जा रहा है...`);
-        try {
-            const searchPattern = `%${searchTerm}%`;
-            const { data, error } = await supabaseClient.from('leads').select('*').or(`name.ilike.${searchPattern},whatsapp_number.ilike.${searchPattern},other_number_1.ilike.${searchPattern},other_number_2.ilike.${searchPattern},vehicle_no.ilike.${searchPattern}`).limit(100);
-            if (error) throw error;
-            handleFetchedData(data.map(row => ({ ID: row.id, S_NO: row.s_no, NAME: row.name, STATUS: row.status, VEHICLE_NO: row.vehicle_no, VEHICLE_NAME: row.vehicle_name, PRODUCT: row.product, LAST_NOTE: row.last_note, VEHICLE_EXPIRY: formatSupabaseDate(row.expiry), EXPIRY_ISO: row.expiry, LAST_UPDATE_DATETIME: row.last_update_datetime, THIRD_PARTY_PRICE: row.third_party_price, WHATSAPP_NUMBER: row.whatsapp_number, OTHER_NUMBER_1: row.other_number_1, OTHER_NUMBER_2: row.other_number_2 })));
-        } catch(error) { handleFailure(error); }
-    }
-    
     function handleFetchedData(data) { CURRENTLY_DISPLAYED_DATA = data; renderColumns(); renderLeads(CURRENTLY_DISPLAYED_DATA); showLoading(false); }
     function handleFailure(error) { showLoading(false); console.error("Supabase Function Failed:", error); renderColumns(`<p class="text-red-600 font-bold">Error: Could not load data. (${error.message})</p><p class="text-gray-400 mt-2">Please check browser console for details.</p>`); }
-    
-    function applyAllFilters() {
-        const startDateStr = document.getElementById('startDate').value, endDateStr = document.getElementById('endDate').value;
-        if (!startDateStr || !endDateStr) { alert("शुरू करने के लिए कृपया Start Date और End Date दोनों चुनें।"); return; }
-        document.getElementById('searchInput').value = '';
-        fetchKanbanData(startDateStr, endDateStr);
-    }
-
-    function clearDateFilter() {
-        document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; document.getElementById('searchInput').value = '';
-        CURRENTLY_DISPLAYED_DATA = [];
-        renderColumns("शुरू करने के लिए कृपया एक तारीख सीमा चुनें और 'फ़िल्टर करें' पर क्लिक करें।");
-        updateColumnCounts([]);
-    }
-    
+    function applyAllFilters() { const startDateStr = document.getElementById('startDate').value, endDateStr = document.getElementById('endDate').value; if (!startDateStr || !endDateStr) { alert("शुरू करने के लिए कृपया Start Date और End Date दोनों चुनें।"); return; } document.getElementById('searchInput').value = ''; fetchKanbanData(startDateStr, endDateStr); }
+    function clearDateFilter() { document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; document.getElementById('searchInput').value = ''; CURRENTLY_DISPLAYED_DATA = []; renderColumns("शुरू करने के लिए कृपया एक तारीख सीमा चुनें और 'फ़िल्टर करें' पर क्लिक करें।"); updateColumnCounts([]); }
     function renderLeads(leadsToRender) {
-        const groupedLeads = leadsToRender.reduce((acc, lead) => {
-            const statusId = normalizeStatusToId(lead.STATUS);
-            if (!acc[statusId]) acc[statusId] = [];
-            acc[statusId].push(lead);
-            return acc;
-        }, {});
+        const groupedLeads = leadsToRender.reduce((acc, lead) => { const statusId = normalizeStatusToId(lead.STATUS); if (!acc[statusId]) acc[statusId] = []; acc[statusId].push(lead); return acc; }, {});
         STATUS_COLUMN_DEFINITIONS.forEach(col => {
             const colEl = document.getElementById(`column-${col.id}`);
             if(!colEl) return;
             colEl.innerHTML = '';
             let leadsInColumn = groupedLeads[col.id] || [];
             const sortOrder = COLUMN_SORT_ORDERS[col.id] || 'asc';
-            leadsInColumn.sort((a, b) => {
-                const valA = a.EXPIRY_ISO || '', valB = b.EXPIRY_ISO || '';
-                if (valA === '') return 1; if (valB === '') return -1;
-                return sortOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
-            });
+            leadsInColumn.sort((a, b) => { const valA = a.EXPIRY_ISO || '', valB = b.EXPIRY_ISO || ''; if (valA === '') return 1; if (valB === '') return -1; return sortOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA); });
             if (leadsInColumn.length === 0) { colEl.innerHTML = '<p class="text-gray-400 p-2 text-sm text-center">No leads.</p>'; } 
-            else {
-                leadsInColumn.forEach(lead => {
-                    const cardHTML = createCardHTML(lead);
-                    colEl.insertAdjacentHTML('beforeend', cardHTML);
-                    const cardElement = colEl.lastElementChild;
-                    const allNumbers = [lead.WHATSAPP_NUMBER, lead.OTHER_NUMBER_1, lead.OTHER_NUMBER_2].filter(num => num && String(num).trim());
-                    cardElement.querySelector('.number-display').innerHTML = allNumbers.length > 0 ? allNumbers.join('<br>') : 'N/A';
-                });
-            }
+            else { leadsInColumn.forEach(lead => { const cardHTML = createCardHTML(lead); colEl.insertAdjacentHTML('beforeend', cardHTML); const allNumbers = [lead.WHATSAPP_NUMBER, lead.OTHER_NUMBER_1, lead.OTHER_NUMBER_2].filter(num => num && String(num).trim()); colEl.lastElementChild.querySelector('.number-display').innerHTML = allNumbers.length > 0 ? allNumbers.join('<br>') : 'N/A'; }); }
         });
         updateColumnCounts(leadsToRender);
         attachCardInteractionListeners();
@@ -245,25 +192,14 @@
         const searchTerm = document.getElementById('searchInput').value.trim();
         if (searchTerm.length === 0) { clearDateFilter(); return; }
         if (searchTerm.length < 3) { return; }
-        debounceTimer = setTimeout(() => {
-            document.getElementById('startDate').value = '';
-            document.getElementById('endDate').value = '';
-            searchLeads(searchTerm);
-        }, 500);
+        debounceTimer = setTimeout(() => { document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; searchLeads(searchTerm); }, 500);
     }
 
-    function toggleSortOrder(columnId) {
-        const currentOrder = COLUMN_SORT_ORDERS[columnId] || 'asc';
-        COLUMN_SORT_ORDERS[columnId] = currentOrder === 'asc' ? 'desc' : 'asc';
-        renderColumns();
-        renderLeads(CURRENTLY_DISPLAYED_DATA);
-    }
-    
+    function toggleSortOrder(columnId) { const currentOrder = COLUMN_SORT_ORDERS[columnId] || 'asc'; COLUMN_SORT_ORDERS[columnId] = currentOrder === 'asc' ? 'desc' : 'asc'; renderColumns(); renderLeads(CURRENTLY_DISPLAYED_DATA); }
     function closeAllDropdowns() { document.querySelectorAll('.dropdown-menu-content').forEach(m => m.classList.add('hidden')); }
     
     async function changeStatus(event, leadId, newStatus) {
-        event.stopPropagation(); closeAllDropdowns();
-        showLoading(true, 'Updating status...');
+        event.stopPropagation(); closeAllDropdowns(); showLoading(true, 'Updating status...');
         try {
             const { error } = await supabaseClient.from('leads').update({ status: newStatus, last_update_datetime: new Date().toISOString() }).eq('id', leadId);
             if (error) throw error;
@@ -275,24 +211,20 @@
     }
     
     function attachCardInteractionListeners() { 
-        if(currentUserRole === 'admin' || currentUserRole === 'editor'){
-            document.querySelectorAll('.edit-note-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); enterEditMode(e.currentTarget.closest('.last-note-container').querySelector('.last-note-display')); })); 
-        }
+        if (currentUserRole === 'admin' || currentUserRole === 'editor') { document.querySelectorAll('.edit-note-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); enterEditMode(e.currentTarget.closest('.last-note-container').querySelector('.last-note-display')); })); }
         document.addEventListener('click', e => { if (!e.target.closest('[data-dropdown-container]')) { closeAllDropdowns(); } }); 
     }
     
     function enterEditMode(noteEl) {
-        const container = noteEl.parentElement;
+        const container = noteEl.parentElement, leadId = noteEl.closest('.kanban-card').dataset.id, noteText = noteEl.dataset.note.trim();
         if (container.querySelector('.note-textarea')) return;
-        const leadId = noteEl.closest('.kanban-card').dataset.id, noteText = noteEl.dataset.note.trim();
         container.querySelector('.flex').classList.add('hidden');
         noteEl.classList.add('hidden');
         const editArea = document.createElement('div');
         editArea.innerHTML = `<textarea class="note-textarea w-full mb-1">${noteText}</textarea><div class="flex justify-end space-x-2"><button class="cancel-edit px-2 py-1 text-xs bg-gray-200 rounded">Cancel</button><button class="save-edit px-2 py-1 text-xs text-white bg-blue-600 rounded">Save</button></div>`;
         container.appendChild(editArea);
         const textarea = editArea.querySelector('textarea');
-        textarea.focus();
-        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        textarea.focus(); textarea.setSelectionRange(textarea.value.length, textarea.value.length);
         editArea.querySelector('.cancel-edit').addEventListener('click', e => { e.stopPropagation(); exitEditMode(noteEl, editArea); });
         editArea.querySelector('.save-edit').addEventListener('click', e => { e.stopPropagation(); updateNoteInSupabase(leadId, textarea.value.trim(), noteEl, editArea); });
     }
@@ -314,13 +246,14 @@
     function exitEditMode(noteEl, editArea) { noteEl.parentElement.querySelector('.flex').classList.remove('hidden'); editArea.remove(); noteEl.classList.remove('hidden'); }
     function alertUser(message) { const el = document.createElement('div'); el.className = 'fixed top-4 right-4 bg-green-500 text-white p-3 rounded-lg shadow-xl z-50'; el.textContent = message; document.body.appendChild(el); setTimeout(() => el.remove(), 3000); }
 
-    window.openStatusDropdown = openStatusDropdown; 
+    // Expose functions to global scope
+    window.openStatusDropdown = (event, leadId) => { event.stopPropagation(); const menu = document.getElementById(`dropdown-menu-${leadId}`); const isHidden = menu.classList.contains('hidden'); closeAllDropdowns(); if (isHidden) menu.classList.remove('hidden'); };
     window.changeStatus = changeStatus; 
     window.toggleSortOrder = toggleSortOrder; 
     window.applyAllFilters = applyAllFilters; 
     window.clearDateFilter = clearDateFilter;
     window.handleSearchInput = handleSearchInput;
     window.logout = logout;
-</script>
+    </script>
 </body>
 </html>
