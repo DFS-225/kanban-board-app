@@ -303,7 +303,7 @@
     }
     
     function attachCardInteractionListeners() { 
-        if (currentUserRole === 'admin') { document.querySelectorAll('.admin-card').forEach(card => card.addEventListener('click', e => { if (!e.target.closest('a, button')) { const leadId = card.dataset.id; const leadData = CURRENTLY_DISPLAYED_DATA.find(l => l.ID == leadId); if(leadData) openEditModal(leadData); } })); }
+        if (currentUserRole === 'admin') { document.querySelectorAll('.admin-card').forEach(card => card.addEventListener('dblclick', e => { if (!e.target.closest('a, button')) { const leadId = card.dataset.id; const leadData = CURRENTLY_DISPLAYED_DATA.find(l => l.ID == leadId); if(leadData) openEditModal(leadData); } })); }
         if (currentUserRole === 'admin' || currentUserRole === 'editor') { document.querySelectorAll('.edit-note-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); enterEditMode(e.currentTarget.closest('.last-note-container').querySelector('.last-note-display')); })); }
         document.addEventListener('click', e => { if (!e.target.closest('[data-dropdown-container]')) { closeAllDropdowns(); } }); 
     }
@@ -383,6 +383,7 @@
 </script>
 </body>
 </html>
+
 
 
 
