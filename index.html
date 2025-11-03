@@ -155,7 +155,7 @@
         lastEndDate = endDateToSet;
         
         STATUS_COLUMN_DEFINITIONS.forEach(col => { COLUMN_SORT_ORDERS[col.id] = 'asc'; });
-        document.getElementById('view-logs-button').style.display = 'block';
+        if (currentUserRole === 'admin' || currentUserRole === 'monitor') {     document.getElementById('view-logs-button').style.display = 'block'; }
 
         renderColumns("शुरू करने के लिए कृपया एक तारीख सीमा चुनें।");
         updateColumnCounts([]);
@@ -383,6 +383,7 @@
 </script>
 </body>
 </html>
+
 
 
 
