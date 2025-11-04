@@ -79,6 +79,7 @@
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">User</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Vehicle No</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Expiry Date</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Field Changed</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Old Value</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">New Value</th>
@@ -385,10 +386,10 @@
         const logTableBody = document.getElementById('log-table-body');
         logTableBody.innerHTML = '';
         if (data.length === 0) {
-            logTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No logs found.</td></tr>`;
+            logTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">No logs found.</td></tr>`;
         } else {
             data.forEach(log => {
-                logTableBody.insertAdjacentHTML('beforeend', `<tr><td class="px-4 py-2 text-sm text-gray-900 break-words">${log.display_name || log.user_email}</td><td class="px-4 py-2 text-sm text-gray-500">${log.vehicle_no || 'N/A'}</td><td class="px-4 py-2 text-sm text-gray-500 font-semibold">${log.changed_field}</td><td class="px-4 py-2 text-sm text-gray-500 break-words">${(log.old_value && log.old_value.length > 30) ? `<details><summary>${log.old_value.substring(0, 25) + '...'}</summary><p class="mt-2">${log.old_value}</p></details>` : (log.old_value || '<i>empty</i>')}</td><td class="px-4 py-2 text-sm text-gray-900 break-words">${(log.new_value && log.new_value.length > 30) ? `<details><summary>${log.new_value.substring(0, 25) + '...'}</summary><p class="mt-2">${log.new_value}</p></details>` : (log.new_value || '<i>empty</i>')}</td><td class="px-4 py-2 text-sm text-gray-500">${formatDateTime(log.created_at)}</td></tr>`);
+                logTableBody.insertAdjacentHTML('beforeend', `<tr><td class="px-4 py-2 text-sm text-gray-900 break-words">${log.display_name || log.user_email}</td><td class="px-4 py-2 text-sm text-gray-500">${log.vehicle_no || 'N/A'}</td><td class="px-4 py-2 text-sm text-gray-500">${formatSupabaseDate(log.vehicle_expiry_date)}</td><td class="px-4 py-2 text-sm text-gray-500 font-semibold">${log.changed_field}</td><td class="px-4 py-2 text-sm text-gray-500 break-words">${(log.old_value && log.old_value.length > 30) ? `<details><summary>${log.old_value.substring(0, 25) + '...'}</summary><p class="mt-2">${log.old_value}</p></details>` : (log.old_value || '<i>empty</i>')}</td><td class="px-4 py-2 text-sm text-gray-900 break-words">${(log.new_value && log.new_value.length > 30) ? `<details><summary>${log.new_value.substring(0, 25) + '...'}</summary><p class="mt-2">${log.new_value}</p></details>` : (log.new_value || '<i>empty</i>')}</td><td class="px-4 py-2 text-sm text-gray-500">${formatDateTime(log.created_at)}</td></tr>`);
             });
         }
         document.getElementById('logModal').style.display = 'flex';
@@ -418,6 +419,7 @@
 </script>
 </body>
 </html>
+
 
 
 
